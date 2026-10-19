@@ -7,14 +7,12 @@
 """Deploy the SIEM triage service (app/) as a GPU ScalingGroup.
 
 Credentials come from your existing `chalk login` (or the CHALK_* env vars):
-    ./deploy.py [--env-id <environment>] [--gpu nvidia-l4]
+    ./deploy.py
 Then GET <web_url>/api/feed for the triaged queue.
 """
 
 from __future__ import annotations
 
-import argparse
-import os
 import time
 from pathlib import Path
 
@@ -25,16 +23,6 @@ HF_HOME = "/models/hf"
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--name", default="siem-triage")
-    # Defaults to the environment in your existing `chalk login` (or CHALK_ENVIRONMENT_ID).
-    parser.add_argument("--env-id", default=None)
-    parser.add_argument("--gpu", default="nvidia-l4")
-    parser.add_argument("--ready-timeout", type=float, default=1800.0)
-    args = parser.parse_args()
-
-    if args.env_id:
-        os.environ["CHALK_ENVIRONMENT"] = args.env_id
     from chalkcompute import Image, ScalingGroup
 
     image = (
@@ -65,8 +53,8 @@ def main() -> None:
 
     sg = ScalingGroup(
         image=image,
-        name=args.name,
-        gpu=args.gpu,
+        name='siem-triage',
+        gpu='nvidia-l4',
         cpu="4",
         memory="16Gi",
         env={
@@ -83,7 +71,7 @@ def main() -> None:
     )
     t0 = time.monotonic()
     try:
-        sg.deploy(build_timeout=2400.0, ready_timeout=args.ready_timeout)
+        sg.deploy(build_timeout=2400.0, ready_timeout=1800.0)
     finally:
         print(f"deploy returned after {time.monotonic() - t0:.0f}s")
     print("web_url:", sg.web_url)
