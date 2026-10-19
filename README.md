@@ -49,11 +49,10 @@ detection rule ─▶ raw alert ─▶ enrich ───────────�
 ## Run it
 
 You need [`uv`](https://docs.astral.sh/uv/) and a Chalk environment that can schedule GPU workloads.
-Credentials come from `chalk config` in the current directory, or `CHALK_API_SERVER`,
-`CHALK_CLIENT_ID`, `CHALK_CLIENT_SECRET` and `CHALK_ENVIRONMENT_ID`.
+Credentials come from your existing `chalk login`.
 
 ```bash
-./deploy.py --gpu nvidia-l4
+./deploy.py
 curl "$WEB_URL/api/feed?after=0"
 ```
 
@@ -73,3 +72,10 @@ uv run --with laya==0.4.6 --with transformers==5.19.0 --with torch==2.7.1 \
 ## License
 
 The code is Apache-2.0. The model weights are Apache-2.0, per their model card.
+
+## Local authentication
+
+The SDK reads credentials, API host, and the selected environment from your existing
+`chalk login` in `~/.chalk.yml`, including project-scoped and default logins.
+For unattended runs, `CHALK_CLIENT_ID` and `CHALK_CLIENT_SECRET` remain supported.
+The examples use the current environment selected by your Chalk login.
